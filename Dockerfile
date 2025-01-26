@@ -29,12 +29,21 @@ COPY . .
 # Generate autoload files
 RUN composer dump-autoload --optimize
 
-# Set permissions
+# Create necessary directories and set permissions
+RUN mkdir -p storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    bootstrap/cache
 RUN chmod -R 777 storage bootstrap/cache
 
 # Create .env file
 RUN cp .env.example .env
 RUN php artisan key:generate
+
+# Cache configuration
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
 # Expose port 8080
 EXPOSE 8080
