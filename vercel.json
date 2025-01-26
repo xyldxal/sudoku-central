@@ -1,5 +1,6 @@
 {
     "version": 2,
+    "framework": "null",
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.6.0"
@@ -24,12 +25,11 @@
             }
         }
     ],
-    "framework": "null",
     "buildCommand": "bash ./vercel-build.sh",
     "env": {
         "APP_NAME": "Sudoku Central",
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_URL": "https://sudoku-central.vercel.app",
         "APP KEY": "base64:4HOEnkaiOxjzOC71/G5rCmQUk3aZjMcsdjKfUeZeyto=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
