@@ -9,13 +9,17 @@ class SudokuService
     public function __construct()
     {
         $this->pythonPath = base_path('python');
+        $this->pythonExecutable = 'python3';
+
+        \Log::info("Python path: {$this->pythonPath}");
+        \Log::info("Python executable: {$this->pythonExecutable}");
     }
 
     public function generateComplete(): array {
-        $command = "python \"{$this->pythonPath}/main.py\" generate_complete";
+        $command = "{$this->pythonExecutable} \"{$this->pythonPath}/main.py\" generate_complete";
         \Log::info("Executing command: " . $command);
 
-        $output = shell_exec($command);
+        $output = shell_exec($command . " 2>&1");
         \Log::info("Python output: " . $output);
 
         $result = json_decode($output, true);
@@ -28,10 +32,10 @@ class SudokuService
     }
 
     public function generateGame(string $difficulty): array {
-        $command = "python \"{$this->pythonPath}/main.py\" generate_game {$difficulty}";
+        $command = "{$this->pythonExecutable} \"{$this->pythonPath}/main.py\" generate_game {$difficulty}";
         
         \Log::info("Executing command: " . $command);
-        $output = shell_exec($command);
+        $output = shell_exec($command . " 2>&1");
         \Log::info("Python output: " . $output);
         
         $result = json_decode($output, true);
@@ -54,10 +58,10 @@ class SudokuService
         return true;
     }
 
-    public function solvePuzzle(array $grid): array{
-        $gridJson = escapeshellarg(json_encode($grid));
-        $command = "python \"{$this->pythonPath}/main.py\" solve {$gridJson}";
-        $output = shell_exec($command);
-        return json_decode($output, true);
-    }
+    // public function solvePuzzle(array $grid): array{
+    //     $gridJson = escapeshellarg(json_encode($grid));
+    //     $command = "python \"{$this->pythonPath}/main.py\" solve {$gridJson}";
+    //     $output = shell_exec($command);
+    //     return json_decode($output, true);
+    // }
 }
