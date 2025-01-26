@@ -37,9 +37,7 @@ RUN chmod -R 777 storage bootstrap/cache python/
 RUN cp .env.example .env
 
 # Generate Laravel key
-RUN php artisan key:generate --force
-RUN php artisan cache:clear 
-RUN php artisan config:clear
+RUN php artisan key:generate
 
 # Create logs directory and set permissions
 RUN mkdir -p storage/logs
