@@ -7,33 +7,23 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * Register the exception handling callbacks for the application.
-     */
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            // Log detailed error information
-            \Log::error('Error: ' . $e->getMessage());
-            \Log::error('File: ' . $e->getFile());
-            \Log::error('Line: ' . $e->getLine());
+            \Log::error('Exception occurred: ' . $e->getMessage());
+            \Log::error('File: ' . $e->getFile() . ':' . $e->getLine());
             \Log::error('Stack trace: ' . $e->getTraceAsString());
         });
     }
 
-    /**
-     * Render an exception into an HTTP response.
-     */
     public function render($request, Throwable $e)
     {
-        if (config('app.debug')) {
-            return parent::render($request, $e);
-        }
-
+        // Always return detailed error information
         return response()->json([
             'error' => $e->getMessage(),
             'file' => $e->getFile(),
-            'line' => $e->getLine()
+            'line' => $e->getLine(),
+            'trace' => explode("\n", $e->getTraceAsString())
         ], 500);
     }
 }
