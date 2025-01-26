@@ -38,6 +38,8 @@ RUN cp .env.example .env
 
 # Generate Laravel key
 RUN php artisan key:generate --force
+RUN php artisan cache:clear 
+RUN php artisan config:clear
 
 # Create logs directory and set permissions
 RUN mkdir -p storage/logs
