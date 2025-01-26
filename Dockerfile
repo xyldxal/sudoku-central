@@ -31,7 +31,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
-RUN chmod -R 755 storage bootstrap/cache python/
+RUN chmod -R 777 storage bootstrap/cache python/
+RUN chmod -R 777 storage/logs
 
 # Create .env file from example
 RUN cp .env.example .env
@@ -39,8 +40,11 @@ RUN cp .env.example .env
 # Generate Laravel key
 RUN php artisan key:generate --force
 
+# Create storage link
+RUN php artisan storage:link
+
 # Expose port
 EXPOSE 8080
 
-# Start PHP server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# Start PHP server with error reporting
+CMD ["php", "-d", "display_errors=1", "-d", "log_errors=1", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
