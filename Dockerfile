@@ -19,7 +19,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Enable Apache modules
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
 
 # Set working directory
 WORKDIR /var/www/html
@@ -43,11 +43,12 @@ RUN cp .env.example .env
 # Generate Laravel key
 RUN php artisan key:generate --force
 
-# Test Python installation
-RUN python3 --version
-RUN python3 python/main.py generate_complete
+# Configure Apache
+COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN a2ensite 000-default.conf
 
-# Apache configuration
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Expose port
+EXPOSE 80
+
+# Start Apache
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
