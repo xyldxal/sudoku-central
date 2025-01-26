@@ -3,78 +3,72 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\Sudoku;
+use App\Services\SudokuService;
 
 class SudokuController extends Controller
 {
     private $sudokuService;
 
-    public function __construct(Sudoku $sudokuService)
+    public function __construct(SudokuService $sudokuService)
     {
         $this->sudokuService = $sudokuService;
     }
 
-    // Main page
+    // main page
     public function index(){
-        return view('sudoku.index');
+        return view('index');
     }
 
-    // Generate a new puzzle
-    public function newGame(Request $request){
+    // game page
+    public function game(){
+        return view('sudoku.game');
+    }
+
+    // create a new game
+    public function startGame(Request $request)
+    {
         try {
             $difficulty = $request->input('difficulty', 'medium');
-
-            if (!in_array($difficulty, ['easy', 'medium', 'hard', 'expert'])) {
-                return response()->json([
-                    'error' => 'Invalid difficulty level'
-                ], 400);
-            }
-
-            $result = $this->sudokuService->generatePuzzle($difficulty);
-
-            if (!$result){
-                throw new \Exception('Failed to generate puzzle');
-            }
-
+            $result = $this->sudokuService->generateGame($difficulty);
+            
             return response()->json([
                 'status' => 'success',
                 'puzzle' => $result['puzzle'],
-                'solution' => $result['solution']
+                'solution' => $result['solution'],
+                'difficulty' => $result['difficulty']
             ]);
+            
         } catch (\Exception $e) {
-            \Log::error('Generation error:' . $e->getMessage());
+            \Log::error('Game generation error: ' . $e->getMessage());
             return response()->json([
-                'error' => 'Failed to generate puzzle',
-                'message' => $e->getMessage()
+                'status' => 'error',
+                'message' => 'Failed to generate game'
             ], 500);
-
         }
     }
-
-    // validate move
-    public function validateMove(Request $request){
+    
+    // check validity of move
+    public function validateMove(Request $request)
+    {
         try {
-            $validated = $request->validate([
-                'row' => 'required|integer|between:0,8',
-                'column' => 'required|integer|between:0,8',
-                'value' => 'required|integer|between:1,9',
-                'solution' => 'required|array'    
-            ]);
-
-            $isValid = $validated['solution'][$validated['row']][$validated['column']] === $validated['value'];
-
+            $currentGrid = $request->input('grid');
+            $solution = $request->input('solution');
+            
+            $isComplete = $this->sudokuService->validateGrid($currentGrid, $solution);
+            
             return response()->json([
                 'status' => 'success',
-                'valid' => $isValid
+                'complete' => $isComplete
             ]);
-
+            
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Invalid move',
-                'message' => $e->getMessage()
-            ], 400);
+                'status' => 'error',
+                'message' => 'Validation failed'
+            ], 500);
         }
     }
+    
 
     // check if puzzle is solved
     public function checkCompletion(Request $request){
@@ -114,7 +108,7 @@ class SudokuController extends Controller
         try{
             $result = $this->sudokuService->generateComplete();
 
-            return response->json([
+            return response()->json([
                 'status' => 'success',
                 'grid' => $result['grid']
             ]);

@@ -32,5 +32,6 @@ class GameGenerator:
 
         return {
             'puzzle': puzzle,
-            'solution': grid
+            'solution': grid,
+            'difficulty': difficulty
         }

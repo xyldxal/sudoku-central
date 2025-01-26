@@ -6,13 +6,15 @@ from grid_generator import GridGenerator
 from solver import Solver
 
 def main():
-    command = sys.argv[1] if len(sys.argv) > 1 else 'generate'
+    command = sys.argv[1] if len(sys.argv) > 1 else 'generate_game'
 
-    if command == 'generate':
+    if command == 'generate_game':
         difficulty = sys.argv[2] if len(sys.argv) > 2 else 'medium'
-        game = GameGenerator
+        game = GameGenerator()
         result = game.generate(difficulty)
         print(json.dumps(result))
+        sys.stdout.flush()
+
 
     elif command == 'solve':
         grid = json.loads(sys.argv[2])
