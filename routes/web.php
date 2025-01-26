@@ -16,22 +16,5 @@ Route::post('/sudoku/check-completion', [SudokuController::class, 'checkCompleti
 Route::post('/sudoku/generate-complete', [SudokuController::class, 'generateComplete']);
 
 Route::get('/test', function () {
-    try {
-        return response()->json([
-            'message' => 'Welcome to Sudoku Central',
-            'env' => [
-                'app_name' => config('app.name'),
-                'app_env' => config('app.env'),
-                'app_debug' => config('app.debug'),
-                'python_path' => env('PYTHON_PATH')
-            ]
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => explode("\n", $e->getTraceAsString())
-        ], 500);
-    }
+    return "Hello World:<";
 });
