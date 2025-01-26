@@ -2,20 +2,32 @@ FROM php:8.2-cli
 
 # Install basic requirements
 RUN apt-get update && apt-get install -y \
+    git \
+    zip \
+    unzip \
     python3 \
     python3-pip
+
+# Install PHP extensions required by Laravel
+RUN docker-php-ext-install bcmath
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . .
+# Copy composer files first
+COPY composer.json composer.lock ./
 
-# Install Composer
+# Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Install dependencies
-RUN composer install --optimize-autoloader
+RUN composer install --no-scripts --no-autoloader
+
+# Copy the rest of the application
+COPY . .
+
+# Generate autoload files
+RUN composer dump-autoload --optimize
 
 # Set permissions
 RUN chmod -R 777 storage bootstrap/cache
