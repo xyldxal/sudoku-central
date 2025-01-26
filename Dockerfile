@@ -10,13 +10,14 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     python3 \
-    python3-pip
+    python3-pip \
+    sqlite3
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Set working directory
 WORKDIR /var/www/html
@@ -32,6 +33,11 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chmod -R 777 storage bootstrap/cache python/
+RUN chmod -R 777 database
+
+# Create SQLite database
+RUN touch database/database.sqlite
+RUN chmod 777 database/database.sqlite
 
 # Create .env file from example
 RUN cp .env.example .env
@@ -39,8 +45,12 @@ RUN cp .env.example .env
 # Generate Laravel key
 RUN php artisan key:generate --force
 
+# Create logs directory and set permissions
+RUN mkdir -p storage/logs
+RUN chmod -R 777 storage/logs
+
 # Expose port 8080
 EXPOSE 8080
 
-# Start PHP server on port 8080
-ENTRYPOINT ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# Start PHP server with error reporting enabled
+ENTRYPOINT ["php", "-d", "display_errors=1", "-d", "error_reporting=E_ALL", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
