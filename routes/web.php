@@ -14,3 +14,7 @@ Route::post('/sudoku/validate', [SudokuController::class, 'validateMove']);
 Route::post('/sudoku/check-completion', [SudokuController::class, 'checkCompletion']);
 // Route::post('/sudoku/hint', [SudokuController::class, 'getHint']);
 Route::post('/sudoku/generate-complete', [SudokuController::class, 'generateComplete']);
+
+Route::get('/test', function () {
+    return response()->json(['status' => 'ok']);
+});
