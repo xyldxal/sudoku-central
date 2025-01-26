@@ -37,6 +37,9 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 755 storage bootstrap/cache python/
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+# Create .env file from example
+RUN cp .env.example .env
+
 # Generate Laravel key
 RUN php artisan key:generate --force
 
