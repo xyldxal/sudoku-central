@@ -10,14 +10,13 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     python3 \
-    python3-pip \
-    sqlite3
+    python3-pip
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install mbstring exif pcntl bcmath gd
 
 # Set working directory
 WORKDIR /var/www/html
@@ -33,11 +32,6 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions
 RUN chmod -R 777 storage bootstrap/cache python/
-RUN chmod -R 777 database
-
-# Create SQLite database
-RUN touch database/database.sqlite
-RUN chmod 777 database/database.sqlite
 
 # Create .env file from example
 RUN cp .env.example .env
