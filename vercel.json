@@ -12,6 +12,19 @@
             "dest": "/api/index.php"
         }
     ],
+    "builds": [
+        {
+            "src": "api/index.php",
+            "use": "@vercel/php"
+        },
+        {
+            "src": "vercel-build.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "public"
+            }
+        }
+    ],
     "env": {
         "APP_NAME": "Sudoku Central",
         "APP_ENV": "production",
