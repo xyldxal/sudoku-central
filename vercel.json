@@ -25,6 +25,7 @@
             }
         }
     ],
+    "buildCommand": "bash ./vercel-build.sh",
     "env": {
         "APP_NAME": "Sudoku Central",
         "APP_ENV": "production",
