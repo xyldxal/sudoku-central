@@ -45,10 +45,22 @@ RUN php artisan key:generate --force
 
 # Configure Apache
 COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN a2ensite 000-default.conf
+
+# Set environment variables for Apache
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
+ENV APACHE_PID_FILE /var/run/apache2/apache2.pid
+ENV APACHE_RUN_DIR /var/run/apache2
+ENV APACHE_LOCK_DIR /var/lock/apache2
+
+# Create required directories
+RUN mkdir -p $APACHE_RUN_DIR $APACHE_LOCK_DIR $APACHE_LOG_DIR
 
 # Expose port
 EXPOSE 80
 
 # Start Apache
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["apache2-foreground"]
